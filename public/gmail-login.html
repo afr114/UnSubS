@@ -62,27 +62,28 @@
        * are found an appropriate message is printed.
        */
       function listSpamMessages() {
-        var initalRequest = gapi.client.gmail.users.messages.list({
+        var initialRequest = gapi.client.gmail.users.messages.list({
           'userId': 'afr114@gmail.com',
           'includeSpamTrash': 'true',
           'id': 'SPAM'
         });
-
-        initalRequest.execute( function(resp) {
-          console.log(resp.result)
-          var initialMessages = resp.messages;
-          var nextPageToken = resp.nextPageToken;
-          if (nextPageToken) {
+        var spamMessagesObjects = [];
+        function executeRequest (request) {
+          request.execute( function(resp) {
+            spamMessagesObjects.push(resp)
+            var nextPageToken = resp.nextPageToken;
             var additionalRequest = gapi.client.gmail.users.messages.list({
               'userId': 'afr114@gmail.com',
               'includeSpamTrash': 'true',
               'pageToken': nextPageToken,
             });
-            additionalRequest.execute( function(resp) {
-              console.log(resp);
-            })
-          }
-        });
+            if (nextPageToken) {
+              executeRequest(additionalRequest)
+            }
+          });
+          return spamMessagesObjects;
+        }
+        executeRequest(initialRequest)
       }
 
       /**
