@@ -73,7 +73,7 @@
 
         var spamMessagesObjects = [];
 
-        function executeRequest (request, result) {
+        function executeRequest (request) {
           request.execute( function(resp) {
             spamMessagesObjects.push(resp)
             var nextPageToken = resp.nextPageToken;
