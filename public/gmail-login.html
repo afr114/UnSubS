@@ -57,18 +57,23 @@
         gapi.client.load('gmail', 'v1', listSpamMessages);
       }
 
+      function logger(result) {
+        console.log(result)
+      }
       /**
-       * Print all Labels in the authorized user's inbox. If no labels
-       * are found an appropriate message is printed.
+       * Fetches the messageIds and threadIds of all messages that contain the id of SPAM.
+       *
        */
-      function listSpamMessages() {
+      function listSpamMessages(logger) {
         var initialRequest = gapi.client.gmail.users.messages.list({
           'userId': 'afr114@gmail.com',
           'includeSpamTrash': 'true',
           'id': 'SPAM'
         });
+
         var spamMessagesObjects = [];
-        function executeRequest (request) {
+
+        function executeRequest (request, result) {
           request.execute( function(resp) {
             spamMessagesObjects.push(resp)
             var nextPageToken = resp.nextPageToken;
@@ -79,9 +84,12 @@
             });
             if (nextPageToken) {
               executeRequest(additionalRequest)
+            } else {
+              spamMessagesObjects.map( function(item, index, array) {
+                console.log(item)
+              })
             }
           });
-          return spamMessagesObjects;
         }
         executeRequest(initialRequest)
       }
